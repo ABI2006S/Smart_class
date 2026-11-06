@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏫 SmartClassroom Automation
+# 🏫 Smart Classroom Automation
 ### *Comprehensive Embedded IoT Management, Access Control & Environmental Safety System*
 
 <br>
@@ -101,56 +101,9 @@ The complete circuitry connects directly to the ESP32-S3 peripheral bus. Opto-is
 
 The system firmware functions as a deterministic **cooperative finite state machine (FSM)**. Rather than relying on blocking delays (`delay()`), each subsystem executes periodic non-blocking sampling using `millis()` timing counters.
 
-```mermaid
-stateDiagram-v2
-    [*] --> BOOT_INIT: Power On / Hardware Reset
-    
-    state BOOT_INIT {
-        [*] --> SetupPeripherals: Pin Mode & Timer Allocation
-        SetupPeripherals --> InitSensors: DHT11, LDR, MQ-2, PN532 SPI
-        InitSensors --> StartNetwork: SoftAP 'S5CSEA' & HTTP Server
-        StartNetwork --> [*]: Ready Flag Set
-    }
-
-    BOOT_INIT --> ACTIVE_MONITORING: All Subsystems Healthy
-
-    state ACTIVE_MONITORING {
-        state Environmental_Automation {
-            [*] --> ReadClimate: Every 2200ms
-            ReadClimate --> FanON: Temp > 40.0°C
-            ReadClimate --> FanOFF: Temp < 38.0°C
-            
-            [*] --> ReadLDR: Every 250ms
-            ReadLDR --> LightON: Intensity < 1800 ADC
-            ReadLDR --> LightOFF: Intensity ≥ 1800 ADC
-            
-            ReadLDR --> WindowsOPEN: Light < 1800 (Auto)
-            ReadLDR --> WindowsCLOSED: Light ≥ 1800 (Glared)
-        }
-
-        state Access_Control {
-            [*] --> ScanRFID: Every 150ms
-            ScanRFID --> ValidateUID: Card Detected
-            ValidateUID --> AccessGranted: UID Matches Authorized List
-            ValidateUID --> AccessDenied: Unrecognized UID
-            AccessGranted --> MarkAttendance: Set Student 'Present'
-            MarkAttendance --> UnlockDoor: Servo to 0°
-            UnlockDoor --> AutoRelock: 2000ms Timeout Expired
-            AutoRelock --> LockDoor: Servo to 180°
-        }
-    }
-
-    ACTIVE_MONITORING --> EMERGENCY_ALERT: Smoke Level > 1500 ADC or DO Pin LOW
-    
-    state EMERGENCY_ALERT {
-        [*] --> SoundBuzzer: Rapid Acoustic Pulse
-        SoundBuzzer --> ForceCloseWindows: Servos Forced to 180°
-        ForceCloseWindows --> BroadcastEmergency: Flag Dashboard Warning
-        BroadcastEmergency --> [*]
-    }
-
-    EMERGENCY_ALERT --> ACTIVE_MONITORING: Smoke Cleared & Level < 1500 ADC
-```
+<p align="center">
+  <img src="document/7.png" alt="System Architecture" width="100%" style="max-width: 860px; height: auto;" />
+</p>
 
 ### Operational Logic & Safety Precedence
 1. **Safety Interlock Priority:** Smoke and gas hazards override all environmental preferences. If `smokeLevel > 1500 ADC` or the MQ-2 digital comparator trips, both window servos immediately lock closed (`180°`) to prevent external draught propagation, and the acoustic buzzer engages continuously.
