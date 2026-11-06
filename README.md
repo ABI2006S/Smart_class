@@ -42,53 +42,9 @@ This project addresses these challenges with an integrated embedded architecture
 
 The system is organized into a four-tier architecture spanning physical sensing, edge processing, real-time actuation, and network presentation:
 
-```mermaid
-flowchart TD
-    subgraph SENSORS["1. SENSING LAYER"]
-        RFID["PN532 NFC/RFID\n(SPI Bus)"]
-        DHT["DHT11 Climate Sensor\n(GPIO 4 Digital)"]
-        LDR["LDR Light Sensor\n(GPIO 1 Analog ADC)"]
-        MQ2["MQ-2 Gas / Smoke\n(GPIO 5 ADC & GPIO 6 DO)"]
-    end
-
-    subgraph MCU["2. EDGE COMPUTATION LAYER (ESP32-S3)"]
-        CORE["Non-Blocking System State Engine\n(millis Cooperative Scheduler)"]
-        FS["Flash Memory SPIFFS / PROGMEM\n(HTML5 / CSS3 / JS UI Assets)"]
-        NET["Network Stack\n(SoftAP 'S5CSEA' / Station Wi-Fi)"]
-    end
-
-    subgraph ACTUATORS["3. ACTUATION & LOCAL UI LAYER"]
-        DOOR_SERVO["Door Servo SG90\n(GPIO 18 PWM)"]
-        WIN_SERVO["Dual Window Servos SG90\n(GPIO 10 & 11 PWM)"]
-        LIGHT_RELAY["Classroom Light Relay\n(GPIO 15 Opto-Relay)"]
-        FAN_RELAY["Ventilation Fan Relay\n(GPIO 16 Opto-Relay)"]
-        BUZZER["Acoustic Alarm Buzzer\n(GPIO 7 / 38 Digital)"]
-        OLED["SH1106 128x64 OLED Display\n(GPIO 39 SDA / 40 SCL I2C)"]
-    end
-
-    subgraph PRESENTATION["4. PRESENTATION & IOT CLIENT LAYER"]
-        BROWSER["Mobile & PC Browser Dashboard\n(Responsive Single-Page App)"]
-        REST_API["REST Endpoints (/api/status, /api/logs)\nCaptive DNS Redirection"]
-    end
-
-    RFID -->|SPI Protocol| CORE
-    DHT -->|Digital Pulse| CORE
-    LDR -->|Analog ADC| CORE
-    MQ2 -->|ADC & Logic DO| CORE
-
-    CORE -->|PWM Signal| DOOR_SERVO
-    CORE -->|PWM Synchronized| WIN_SERVO
-    CORE -->|Active LOW| LIGHT_RELAY
-    CORE -->|Active LOW| FAN_RELAY
-    CORE -->|Digital Trigger| BUZZER
-    CORE -->|I2C 0x3C| OLED
-
-    CORE <--> NET
-    NET <--> REST_API
-    FS --> REST_API
-    REST_API <--> BROWSER
-```
-
+<p align="center">
+  <img src="document/6.png" alt="System Architecture" width="100%" style="max-width: 860px; height: auto;" />
+</p>
 ---
 
 ## 3. Hardware Specification & Wiring
