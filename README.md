@@ -291,7 +291,7 @@ The modular firmware architecture enables effortless expansion to support multi-
 <div align="center">
 
 **Developed for S5CSE A — Smart Classroom Project**  
-*ESP32-S3 N16R8 Edge Embedded System*
+*ROOM 120*
 
 <br>
 
